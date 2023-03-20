@@ -5,6 +5,7 @@ export default class Planet {
     this.scene = scene;
     this.size = size;
     this.sprite = scene.physics.add.sprite(x, y, texture);
+    this.sprite.angle = Phaser.Math.RND.between(0, 359);
     this.sprite.displayWidth = size;
     this.sprite.displayHeight = size;
     this.sprite.setCircle(size / 2);
@@ -53,10 +54,10 @@ export default class Planet {
 
   addSpike(angle, vertical) {
     const radians = Phaser.Math.DegToRad(angle - 90);
-    const distanceFromCenter = (this.size / 2 + 80 * 2 + 15 + 250 * vertical) / 2;
+    const distanceFromCenter = this.size / 2 + 50 * vertical;
 
     const s = this.scene.spikes.create(this.sprite.x + distanceFromCenter * Math.cos(radians), this.sprite.y + distanceFromCenter * Math.sin(radians), "spike");
-    c.setAngle(180);
+    s.setAngle(angle);
     this.spritesAdded.push(s);
   }
 

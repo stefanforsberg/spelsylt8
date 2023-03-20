@@ -1,11 +1,16 @@
 import Phaser from "phaser";
-import Planet from "./planet";
+
+import Levels from "./levels";
 
 export default class TutorialScene extends Phaser.Scene {
   constructor() {
     super({
       key: "TutorialScene",
     });
+  }
+
+  init(data) {
+    this.currentLevel = data.level;
   }
 
   create() {
@@ -17,86 +22,26 @@ export default class TutorialScene extends Phaser.Scene {
     this.player.body.checkCollision.up = true;
     this.player.body.checkCollision.left = false;
     this.player.body.checkCollision.right = false;
-
-    this.texts = this.physics.add.group();
-
-    this.platforms = this.physics.add.group();
-
-    this.coins = this.physics.add.group();
-    this.spikes = this.physics.add.group();
-    this.planets = this.physics.add.group();
-    this.exits = this.physics.add.group();
-
     this.player.setOrigin(0.5, 0);
     this.player.setGravityY(1000);
 
     this.playerNoPhysics = this.physics.add.sprite(0, 0, "player");
     this.playerNoPhysics.visible = false;
 
-    this.scene.launch("TimerScene", { parent: this });
+    this.texts = this.physics.add.group();
+    this.platforms = this.physics.add.group();
+    this.coins = this.physics.add.group();
+    this.spikes = this.physics.add.group();
+    this.planets = this.physics.add.group();
+    this.exits = this.physics.add.group();
 
+    this.scene.launch("TimerScene", { parent: this });
     this.timerScene = this.scene.get("TimerScene");
 
     this.moving = false;
 
-    const textSettings = { fontFamily: "Bebas Neue", fontSize: 40, color: "#ffffff" };
-
-    this.texts.add(this.add.text(100, 200, "You can bounce on stars\nPress and hold button to move forward\nRelease to stop moving", textSettings));
-    this.texts.add(this.add.text(80 * 10 - 50, 500, "Mind the gap", textSettings));
-    this.texts.add(this.add.text(80 * 18 - 30, 200, "Certain stars are unstable\nBounce away before they fade away", textSettings));
-    this.texts.add(this.add.text(80 * 35 - 30, 200, "Jump unto planets to orbit around\nand collect taxes.", textSettings));
-    this.texts.add(this.add.text(80 * 40 - 30, 800, "Press button to switch orbit\naround planet", textSettings));
-
-    this.addStandard(2, 600);
-    this.addStandard(3, 600);
-    this.addStandard(4, 600);
-    this.addStandard(5, 600);
-    this.addStandard(6, 600);
-    this.addStandard(7, 600);
-    this.addStandard(8, 600);
-    this.addStandard(9, 600);
-
-    this.addStandard(12, 600);
-    this.addStandard(13, 600);
-
-    this.addStandard(16, 500);
-    this.addStandard(17, 500);
-
-    this.addFading(20, 500);
-
-    this.addStandard(23, 600);
-    this.addStandard(24, 600);
-    this.addStandard(25, 600);
-    this.addStandard(26, 600);
-
-    this.texts.add(this.add.text(80 * 28 - 30, 200, "Collect coins and watch out\n for spikes.", { fontFamily: "Bebas Neue", fontSize: 40, color: "#ffffff" }));
-    this.addStandard(29, 600);
-    this.addStandard(30, 600);
-    this.coins.create(30 * 80, 550, "coin");
-    this.addStandard(31, 500);
-    this.spikes.create(31 * 80, 470, "spike");
-    this.addStandard(32, 600);
-
-    this.addStandard(35, 600);
-    this.addStandard(36, 600);
-    this.addStandard(37, 600);
-    this.addStandard(38, 600);
-
-    this.addStandard(43, 600);
-
-    this.planets.add(
-      new Planet(this, 43 * 80, 600, "planet", 300, 3, (p) => {
-        p.addCoin(0, 0);
-        p.addCoin(45, 0);
-        p.addCoin(230, 1);
-      }).sprite
-    );
-
-    this.exits.create(47 * 80 + 40, 550, "exit");
-
-    this.addStandard(45, -300);
-    this.coins.create(47 * 80, -550, "coin");
-    this.exits.create(49 * 80 + 40, -300, "exit");
+    console.log("cl: " + this.currentLevel);
+    this.levels = new Levels(this);
 
     this.planet = null;
     this.onPlanet = false;
@@ -122,7 +67,7 @@ export default class TutorialScene extends Phaser.Scene {
       }
 
       if (s.fade) {
-        s.alpha -= 0.5;
+        s.alpha -= 1;
         if (s.alpha <= 0) {
           s.destroy();
         }
@@ -251,7 +196,7 @@ export default class TutorialScene extends Phaser.Scene {
       this.currentAngle = Phaser.Math.Angle.WrapDegrees(this.currentAngle + 2);
       this.totalPlanetAngle += 2;
       var radians = Phaser.Math.DegToRad(this.currentAngle);
-      var distanceFromCenter = (150 + 80 * 2 + 70 + this.planetAltitude) / 2;
+      var distanceFromCenter = (this.planet.size / 2 + 80 * 2 + 70 + this.planetAltitude) / 2;
       this.playerNoPhysics.angle = this.currentAngle + 90;
       this.playerNoPhysics.setX(this.planet.sprite.x + distanceFromCenter * Math.cos(radians));
       this.playerNoPhysics.setY(this.planet.sprite.y + distanceFromCenter * Math.sin(radians));

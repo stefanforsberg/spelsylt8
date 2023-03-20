@@ -32,13 +32,14 @@ export default class StartScene extends Phaser.Scene {
         families: ["Bebas Neue"],
       },
       active: () => {
+        this.scene.launch("BgScene", { parent: this });
+        this.scene.sendToBack("BgScene");
         // add.text(16, 0, "The face of the\nmoon was in\nshadow.", { fontFamily: "Freckle Face", fontSize: 80, color: "#ffffff" }).setShadow(2, 2, "#333333", 2, false, true);
         // add.text(250, 450, "Waves flung themselves\nat the blue evening.", { fontFamily: "Finger Paint", fontSize: 40, color: "#5656ee" });
 
         // var t = add.text(330, 200, "R.I.P", { fontFamily: "Nosifer", fontSize: 150, color: "#ff3434" });
 
-        this.scene.launch("TutorialScene");
-        console.log("hey");
+        this.scene.launch("TimerScene", { parent: this, showMenu: true });
       },
     });
   }

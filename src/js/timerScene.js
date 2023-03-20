@@ -7,6 +7,7 @@ export default class TimerScene extends Phaser.Scene {
 
   init(data) {
     this.parent = data.parent;
+    this.showMenu = data.showMenu;
   }
 
   create() {
@@ -23,25 +24,51 @@ export default class TimerScene extends Phaser.Scene {
     const screenCenterX = this.cameras.main.worldView.x + this.cameras.main.width / 2;
     const screenCenterY = this.cameras.main.worldView.y + this.cameras.main.height / 2;
 
+    const textSettings = { fontFamily: "Bebas Neue", fontSize: 40, color: "#ffffff" };
+
     this.restart = this.add
-      .text(screenCenterX, screenCenterY - 120, "Restart", { fontFamily: "Bebas Neue", fontSize: 40, color: "#ffffff" })
+      .text(screenCenterX, screenCenterY - 120, "Restart level", textSettings)
       .setOrigin(0.5)
       .setInteractive({ cursor: "pointer" })
-      .on("pointerdown", () => this.parent.scene.restart());
+      .on("pointerdown", () => this.parent.scene.start("TutorialScene", { level: this.parent.scene.currentLevel }))
+      .on("pointerover", () => this.restart.setTint(0xff0000))
+      .on("pointerout", () => this.restart.clearTint());
 
-    this.l1 = this.add.text(screenCenterX, screenCenterY, "Level 1", { fontFamily: "Bebas Neue", fontSize: 40, color: "#ffffff" }).setOrigin(0.5);
-    this.l2 = this.add.text(screenCenterX, screenCenterY + 60, "Level 2", { fontFamily: "Bebas Neue", fontSize: 40, color: "#ffffff" }).setOrigin(0.5);
+    this.l1 = this.add
+      .text(screenCenterX, screenCenterY, "Tutorial Level", textSettings)
+      .setOrigin(0.5)
+      .setInteractive({ cursor: "pointer" })
+      .on("pointerdown", () => this.parent.scene.start("TutorialScene", { level: "level1" }))
+      .on("pointerover", () => this.l1.setTint(0xff0000))
+      .on("pointerout", () => this.l1.clearTint());
 
-    this.l1.on("pointerdown", () => {
-      console.log("p1");
-      this.scene.start("TutorialScene");
-    });
+    this.l2 = this.add
+      .text(screenCenterX, screenCenterY + 60, "Level 2", textSettings)
+      .setOrigin(0.5)
+      .setInteractive({ cursor: "pointer" })
+      .on("pointerdown", () => this.parent.scene.start("TutorialScene", { level: "level2" }))
+      .on("pointerover", () => this.l2.setTint(0xff0000))
+      .on("pointerout", () => this.l2.clearTint());
+
+    this.l3 = this.add
+      .text(screenCenterX, screenCenterY + 120, "Level 3", textSettings)
+      .setOrigin(0.5)
+      .setInteractive({ cursor: "pointer" })
+      .on("pointerdown", () => this.parent.scene.start("TutorialScene", { level: "level3" }))
+      .on("pointerover", () => this.l3.setTint(0xff0000))
+      .on("pointerout", () => this.l3.clearTint());
 
     this.container.add(this.restart);
     this.container.add(this.l1);
     this.container.add(this.l2);
+    this.container.add(this.l3);
 
-    this.container.visible = false;
+    if (!this.showMenu) {
+      this.container.visible = false;
+    } else {
+      this.timerText.visible = false;
+      this.restart.visible = false;
+    }
   }
 
   showEnd() {

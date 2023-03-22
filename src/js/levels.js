@@ -9,6 +9,8 @@ export default class Levels {
       this.level3();
     } else if (this.scene.currentLevel == "level2") {
       this.level2();
+    } else if (this.scene.currentLevel == "level4") {
+      this.level4();
     } else {
       this.level1();
     }
@@ -16,6 +18,8 @@ export default class Levels {
 
   level1() {
     const textSettings = { fontFamily: "Bebas Neue", fontSize: 40, color: "#ffffff" };
+
+    this.scene.levelCoins = 5;
 
     this.scene.texts.add(this.scene.add.text(100, 200, "You can bounce on stars\nPress and hold button to move forward\nRelease to stop moving", textSettings));
     this.scene.texts.add(this.scene.add.text(80 * 10 - 50, 500, "Mind the gap", textSettings));
@@ -46,7 +50,7 @@ export default class Levels {
     this.scene.addStandard(25, 600);
     this.scene.addStandard(26, 600);
 
-    this.scene.texts.add(this.scene.add.text(80 * 28 - 30, 200, "Collect coins and watch out\n for spikes.", { fontFamily: "Bebas Neue", fontSize: 40, color: "#ffffff" }));
+    this.scene.texts.add(this.scene.add.text(80 * 28 - 30, 200, "Collect taxes and watch out\n for spikes.", { fontFamily: "Bebas Neue", fontSize: 40, color: "#ffffff" }));
     this.scene.addStandard(29, 600);
     this.scene.addStandard(30, 600);
     this.scene.coins.create(30 * 80, 550, "coin");
@@ -77,9 +81,11 @@ export default class Levels {
   }
 
   level2() {
-    this.scene.addStandard(2, 600);
+    this.scene.levelCoins = 2;
+
     this.scene.addStandard(3, 600);
     this.scene.addStandard(4, 600);
+    this.scene.addStandard(5, 600);
 
     this.scene.addStandard(9, 600);
     this.scene.addStandard(10, 400);
@@ -102,46 +108,68 @@ export default class Levels {
   }
 
   level3() {
-    this.scene.addStandard(2, 600);
-    this.scene.addStandard(3, 600);
+    this.scene.levelCoins = 2;
+
     this.scene.addStandard(4, 600);
+    this.scene.addStandard(5, 600);
+    this.scene.addStandard(6, 600);
 
     this.scene.planets.add(
-      new Planet(this.scene, 8 * 80, 600, "planet", 300, 3, (p) => {
+      new Planet(this.scene, 10 * 80, 600, "planet", 300, 3, (p) => {
         p.addCoin(230, 0);
       }).sprite
     );
 
     this.scene.planets.add(
-      new Planet(this.scene, 14 * 80, 600, "planet", 300, 3, (p) => {
+      new Planet(this.scene, 16 * 80, 600, "planet2", 300, 3, (p) => {
         p.addSpike(65, 0);
         p.addCoin(110, 0);
         p.addSpike(200, 0);
       }).sprite
     );
 
-    this.scene.addStandard(18, 600);
+    this.scene.addStandard(20, 600);
 
-    this.scene.addFading(21, 600);
-    this.scene.addFading(25, 500);
-
-    // this.scene.addStandard(9, 600);
-    // this.scene.addStandard(10, 400);
-    // this.scene.addStandard(10, 400);
-    // this.scene.addStandard(10, 600);
-    // this.scene.addStandard(11, 400);
-    // this.scene.addStandard(11, 600);
-    // this.scene.addStandard(12, 400);
-    // this.scene.addStandard(12, 600);
-    // this.scene.coins.create(12 * 80, 550, "coin");
-    // this.scene.addStandard(13, 600);
-
-    // this.scene.addFading(15, 600);
-    // this.scene.addFading(18, 400);
-    // this.scene.addFading(21, 500);
-    // this.scene.coins.create(21 * 80, 250, "coin");
-    // this.scene.addFading(25, 500);
+    this.scene.addFading(23, 600);
+    this.scene.addFading(27, 500);
 
     this.scene.exits.create(29 * 80 + 40, 300, "exit");
+  }
+
+  level4() {
+    this.scene.levelCoins = 3;
+
+    this.scene.addStandard(5, 600);
+
+    this.scene.addFading(7, 600);
+    this.scene.addMoving(9, 600, -300, 3000);
+    this.scene.addFading(13, 600);
+
+    this.scene.addMoving(15, 600, -200, 1000);
+
+    this.scene.planets.add(
+      new Planet(this.scene, 22 * 80, 600, "planet", 600, 3, (p) => {
+        p.addCoin(230, 0);
+      }).sprite
+    );
+
+    this.scene.addFading(27, 400);
+    this.scene.addFading(28, 400);
+    this.scene.addFading(29, 400);
+
+    this.scene.spikes.create(30 * 80, 470, "spike");
+    this.scene.spikes.create(31 * 80, 470, "spike");
+    this.scene.addStandard(30, 500);
+    this.scene.addStandard(31, 500);
+
+    this.scene.exits.create(32 * 80 + 40, 200, "exit");
+
+    this.scene.addFading(28, 700);
+    this.scene.addStandard(32, 700);
+    this.scene.coins.create(32 * 80, 650, "coin");
+    this.scene.addFading(35, 700);
+    this.scene.coins.create(35 * 80, 650, "coin");
+    this.scene.addStandard(38, 700);
+    this.scene.exits.create(41 * 80 + 40, 500, "exit");
   }
 }

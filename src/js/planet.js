@@ -5,10 +5,10 @@ export default class Planet {
     this.scene = scene;
     this.size = size;
     this.sprite = scene.physics.add.sprite(x, y, texture);
-    this.sprite.angle = Phaser.Math.RND.between(0, 359);
+
     this.sprite.displayWidth = size;
     this.sprite.displayHeight = size;
-    this.sprite.setCircle(size / 2);
+
     this.sprite.setImmovable(true);
     this.numberOfCoinsForBoost = numberOfCoinsForBoost;
 
@@ -20,14 +20,14 @@ export default class Planet {
     if (addItems) addItems(self);
 
     scene.physics.add.overlap(scene.player, this.sprite, () => {
-      console.log("crash planet");
-
       scene.totalPlanetAngle = 0;
+      scene.canDash = true;
 
       scene.stopMovement();
 
       scene.planet = this;
       scene.onPlanet = true;
+      scene.isMoving = false;
       scene.player.body.enable = false;
       scene.player.visible = false;
       scene.playerNoPhysics.setX(scene.player.x);
@@ -39,14 +39,14 @@ export default class Planet {
       scene.tweens.add({
         targets: [scene.cameras.main],
         duration: 300,
-        zoom: 0.7,
+        zoom: this.size > 300 ? 0.5 : 0.7,
       });
     });
   }
 
   addCoin(angle, vertical) {
     const radians = Phaser.Math.DegToRad(angle - 90);
-    const distanceFromCenter = (this.size / 2 + 80 * 2 + 15 + 250 * vertical) / 2;
+    const distanceFromCenter = this.size / 2 + 15 + 120 * vertical;
 
     const c = this.scene.coins.create(this.sprite.x + distanceFromCenter * Math.cos(radians), this.sprite.y + distanceFromCenter * Math.sin(radians), "coin");
     this.spritesAdded.push(c);
@@ -54,7 +54,7 @@ export default class Planet {
 
   addSpike(angle, vertical) {
     const radians = Phaser.Math.DegToRad(angle - 90);
-    const distanceFromCenter = this.size / 2 + 50 * vertical;
+    const distanceFromCenter = this.size / 2 + 15 + 15 * vertical;
 
     const s = this.scene.spikes.create(this.sprite.x + distanceFromCenter * Math.cos(radians), this.sprite.y + distanceFromCenter * Math.sin(radians), "spike");
     s.setAngle(angle);

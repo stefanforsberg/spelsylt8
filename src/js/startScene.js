@@ -1,11 +1,15 @@
 import Phaser from "phaser";
 import imgPlanet from "../img/planet.png";
+import imgPlanet2 from "../img/planet02.png";
 import imgPlayer from "../img/player.png";
 import imgStar from "../img/star.png";
+import imgStarAnim from "../img/star_anim.png";
 import imgCoin from "../img/coin.png";
 import imgSpike from "../img/spike.png";
 import imgExit from "../img/exit.png";
 import imgBg from "../img/bg.png";
+import imgBg2 from "../img/bg2.png";
+import imgDash from "../img/dash.png";
 
 export default class StartScene extends Phaser.Scene {
   constructor() {
@@ -16,12 +20,16 @@ export default class StartScene extends Phaser.Scene {
 
   preload() {
     this.load.image("planet", imgPlanet);
+    this.load.image("planet2", imgPlanet2);
     this.load.image("player", imgPlayer);
     this.load.image("star", imgStar);
+    this.load.image("starAnim", imgStarAnim);
     this.load.image("coin", imgCoin);
     this.load.image("spike", imgSpike);
     this.load.image("exit", imgExit);
     this.load.image("bg", imgBg);
+    this.load.image("bg2", imgBg2);
+    this.load.image("dash", imgDash);
 
     this.load.script("webfont", "https://ajax.googleapis.com/ajax/libs/webfont/1.6.26/webfont.js");
   }

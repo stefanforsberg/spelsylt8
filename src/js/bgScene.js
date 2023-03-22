@@ -10,7 +10,11 @@ export default class BgScene extends Phaser.Scene {
   }
 
   create() {
-    this.bg = this.add.sprite(0, 0, "bg").setOrigin(0);
+    if (Phaser.Math.RND.between(1, 100) > 50) {
+      this.bg = this.add.sprite(0, 0, "bg").setOrigin(0);
+    } else {
+      this.bg = this.add.sprite(0, 0, "bg2").setOrigin(0);
+    }
   }
 
   update() {

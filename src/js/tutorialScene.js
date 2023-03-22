@@ -17,7 +17,7 @@ export default class TutorialScene extends Phaser.Scene {
     this.scene.launch("BgScene", { parent: this });
     this.scene.sendToBack("BgScene");
 
-    this.player = this.physics.add.image(200, 200, "player");
+    this.player = this.physics.add.image(300, 200, "player");
     this.player.body.checkCollision.down = true;
     this.player.body.checkCollision.up = true;
     this.player.body.checkCollision.left = false;
@@ -48,6 +48,8 @@ export default class TutorialScene extends Phaser.Scene {
     this.totalPlanetAngle = 0;
 
     this.physics.add.collider(this.player, this.platforms, (p, s) => {
+      this.canDash = true;
+
       if (p.body.touching.up) {
         p.setVelocity(0, 800);
       } else {
@@ -67,10 +69,27 @@ export default class TutorialScene extends Phaser.Scene {
       }
 
       if (s.fade) {
+        const starAnim = this.add.sprite(s.x, s.y, "starAnim");
+        this.tweens.add({
+          targets: starAnim,
+          duration: 200,
+          y: s.y + 20,
+          x: s.x + s.body.velocity.x / 4,
+          alpha: 0,
+        });
+
         s.alpha -= 1;
         if (s.alpha <= 0) {
           s.destroy();
         }
+      } else if (!s.moving) {
+        this.tweens.add({
+          targets: s,
+          y: s.y + 5,
+          duration: 150,
+          yoyo: true,
+          ease: Phaser.Math.Easing.Bounce.InOut,
+        });
       }
     });
 
@@ -95,7 +114,7 @@ export default class TutorialScene extends Phaser.Scene {
 
     this.physics.add.overlap(this.player, this.exits, (p, c) => {
       this.scene.pause();
-      this.timerScene.showEnd();
+      this.timerScene.showEnd(true);
     });
 
     this.physics.add.collider(this.player, this.planet, () => {
@@ -116,11 +135,47 @@ export default class TutorialScene extends Phaser.Scene {
       });
     });
 
+    let lastPointerDown = this.time.now;
+    this.isMoving = false;
+    this.isDashing = false;
+    this.canDash = true;
     this.input.on(
       "pointerdown",
       (pointer) => {
-        if (!this.planet) {
-          this.move(-300);
+        this.isMoving = true;
+
+        if (!this.planet && !this.isDashing) {
+          let clickDelay = this.time.now - lastPointerDown;
+          lastPointerDown = this.time.now;
+          if (clickDelay < 250 && this.canDash) {
+            this.canDash = false;
+
+            this.move(-300 * 6);
+            this.isDashing = true;
+            this.player.setVelocityY(0);
+            this.player.body.setAllowGravity(false);
+
+            const d = this.add.sprite(this.player.x - 80, this.player.y, "dash").setOrigin(0.5, 0);
+            this.tweens.add({
+              targets: d,
+              x: this.player.x - 300,
+              alpha: 0,
+              duration: 400,
+              scale: 2,
+            });
+
+            this.time.addEvent({
+              delay: 200,
+              callback: () => {
+                this.isDashing = false;
+                this.move(this.isMoving ? -300 : 0);
+                this.player.body.setAllowGravity(true);
+              },
+              loop: false,
+            });
+          } else {
+            this.move(-300);
+          }
         } else {
           this.planetAltitude = this.planetAltitude == 80 ? 0 : 80;
         }
@@ -131,6 +186,7 @@ export default class TutorialScene extends Phaser.Scene {
     this.input.on(
       "pointerup",
       (pointer) => {
+        this.isMoving = false;
         if (!this.planet) {
           this.stopMovement();
         } else {
@@ -142,8 +198,20 @@ export default class TutorialScene extends Phaser.Scene {
 
   addStandard(x, y) {
     const s = this.platforms.create(x * 80, y, "star");
-    // r1.setTint(0xff00ff);
     s.setImmovable(true);
+  }
+
+  addMoving(x, y, deltaY, duration) {
+    const s = this.platforms.create(x * 80, y, "star");
+    s.moving = true;
+    s.setImmovable(true);
+    this.tweens.add({
+      targets: s,
+      y: y + deltaY,
+      yoyo: true,
+      duration: duration,
+      loop: -1,
+    });
   }
 
   addFading(x, y) {
@@ -154,6 +222,7 @@ export default class TutorialScene extends Phaser.Scene {
   }
 
   move(speed) {
+    if (this.isDashing) return;
     this.moving = speed != 0;
     this.platforms.setVelocityX(speed);
     this.planets.setVelocityX(speed);
@@ -196,7 +265,7 @@ export default class TutorialScene extends Phaser.Scene {
       this.currentAngle = Phaser.Math.Angle.WrapDegrees(this.currentAngle + 2);
       this.totalPlanetAngle += 2;
       var radians = Phaser.Math.DegToRad(this.currentAngle);
-      var distanceFromCenter = (this.planet.size / 2 + 80 * 2 + 70 + this.planetAltitude) / 2;
+      var distanceFromCenter = this.planet.size / 2 + 1 + 40 + this.planetAltitude;
       this.playerNoPhysics.angle = this.currentAngle + 90;
       this.playerNoPhysics.setX(this.planet.sprite.x + distanceFromCenter * Math.cos(radians));
       this.playerNoPhysics.setY(this.planet.sprite.y + distanceFromCenter * Math.sin(radians));
